@@ -26,6 +26,22 @@
             font-family: inherit;
         }
 
+        .n8n-chat-widget .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(133, 79, 255, 0.2);
+            border-top: 4px solid var(--chat--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .n8n-chat-widget .chat-container.position-left {
             right: auto;
             left: 20px;
@@ -326,7 +342,7 @@
     // Create widget container
     const widgetContainer = document.createElement('div');
     widgetContainer.className = 'n8n-chat-widget';
-    
+
     // Set CSS variables for colors
     widgetContainer.style.setProperty('--n8n-chat-primary-color', config.style.primaryColor);
     widgetContainer.style.setProperty('--n8n-chat-secondary-color', config.style.secondaryColor);
@@ -335,7 +351,7 @@
 
     const chatContainer = document.createElement('div');
     chatContainer.className = `chat-container${config.style.position === 'left' ? ' position-left' : ''}`;
-    
+
     const newConversationHTML = `
         <div class="brand-header">
             <img src="${config.branding.logo}" alt="${config.branding.name}">
@@ -371,9 +387,9 @@
             </div>
         </div>
     `;
-    
+
     chatContainer.innerHTML = newConversationHTML + chatInterfaceHTML;
-    
+
     const toggleButton = document.createElement('button');
     toggleButton.className = `chat-toggle${config.style.position === 'left' ? ' position-left' : ''}`;
     toggleButton.innerHTML = `
@@ -416,15 +432,20 @@
             });
 
             const responseData = await response.json();
-            chatContainer.querySelector('.brand-header').style.display = 'none';
-            chatContainer.querySelector('.new-conversation').style.display = 'none';
+
+            chatContainer.querySelectorAll('.brand-header, .new-conversation').forEach(el => el.style.display = 'none');
             chatInterface.classList.add('active');
 
-            const botMessageDiv = document.createElement('div');
-            botMessageDiv.className = 'chat-message bot';
-            botMessageDiv.innerHTML = Array.isArray(responseData) ? responseData[0].output : responseData.output;
-            messagesContainer.appendChild(botMessageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            if (responseData) {
+                const botOutput = Array.isArray(responseData) && responseData[0] ? responseData[0].output : responseData.output;
+                if (botOutput) {
+                    const botMessageDiv = document.createElement('div');
+                    botMessageDiv.className = 'chat-message bot';
+                    botMessageDiv.innerHTML = botOutput;
+                    messagesContainer.appendChild(botMessageDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            }
         } catch (error) {
             console.error('Error:', error);
         }
@@ -447,6 +468,12 @@
         messagesContainer.appendChild(userMessageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
+        // Lade-Spinner direkt nach der Benutzernachricht einfügen
+        const loadingSpinner = document.createElement('div');
+        loadingSpinner.className = 'loading-spinner';
+        loadingSpinner.style.display = 'block';
+        messagesContainer.appendChild(loadingSpinner);
+
         try {
             const response = await fetch(config.webhook.url, {
                 method: 'POST',
@@ -455,16 +482,25 @@
                 },
                 body: JSON.stringify(messageData)
             });
-            
+
             const data = await response.json();
-            
-            const botMessageDiv = document.createElement('div');
-            botMessageDiv.className = 'chat-message bot';
-            botMessageDiv.innerHTML = Array.isArray(data) ? data[0].output : data.output;
-            messagesContainer.appendChild(botMessageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Verstecke und entferne den Lade-Spinner
+            loadingSpinner.style.display = 'none';
+            loadingSpinner.remove();
+
+            if (data) {
+                const botOutput = Array.isArray(data) ? data[0].output : data.output;
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'chat-message bot';
+                botMessageDiv.innerHTML = botOutput;
+                messagesContainer.appendChild(botMessageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
         } catch (error) {
             console.error('Error:', error);
+            loadingSpinner.style.display = 'none';
+            loadingSpinner.remove();
         }
     }
 
@@ -493,7 +529,6 @@
         chatContainer.classList.toggle('open');
     });
 
-    // Add close button handlers
     const closeButtons = chatContainer.querySelectorAll('.close-button');
     closeButtons.forEach(button => {
         button.addEventListener('click', () => {
