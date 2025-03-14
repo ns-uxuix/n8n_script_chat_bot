@@ -16,8 +16,8 @@
             right: 20px;
             z-index: 1000;
             display: none;
-            width: 380px;
-            height: 600px;
+            width: 340px;
+            height: 500px;
             background: var(--chat--color-background);
             border-radius: 12px;
             box-shadow: 0 8px 32px rgba(133, 79, 255, 0.15);
@@ -421,7 +421,7 @@
                 userId: ""
             }
         }];
-
+    
         try {
             const response = await fetch(config.webhook.url, {
                 method: 'POST',
@@ -430,12 +430,23 @@
                 },
                 body: JSON.stringify(data)
             });
-
+    
             const responseData = await response.json();
-
-            chatContainer.querySelectorAll('.brand-header, .new-conversation').forEach(el => el.style.display = 'none');
+    
+            // Verstecke nur den `.new-conversation`-Container, aber behalte `.close-button`
+            const newConversationContainer = chatContainer.querySelector('.new-conversation');
+            if (newConversationContainer) {
+                newConversationContainer.style.display = 'none';
+            }
+    
             chatInterface.classList.add('active');
-
+    
+            // Stelle sicher, dass nur **ein** Close-Button sichtbar ist
+            const closeButton = chatContainer.querySelector('.brand-header');
+            if (closeButton) {
+                closeButton.style.display = 'none';
+            }
+    
             if (responseData) {
                 const botOutput = Array.isArray(responseData) && responseData[0] ? responseData[0].output : responseData.output;
                 if (botOutput) {
@@ -450,6 +461,8 @@
             console.error('Error:', error);
         }
     }
+    
+    
 
     async function sendMessage(message) {
         const messageData = {
