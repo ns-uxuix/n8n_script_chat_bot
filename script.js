@@ -236,7 +236,7 @@
 
         .n8n-chat-widget .chat-toggle {
             position: fixed;
-            bottom: 75px;
+            bottom: 60px;
             right: 10px;
             width: 40px;
             height: 40px;
