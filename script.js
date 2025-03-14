@@ -236,11 +236,11 @@
 
         .n8n-chat-widget .chat-toggle {
             position: fixed;
-            bottom: 60px;
+            bottom: 70px;
             right: 10px;
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
+            width: 45px;
+            height: 45px;
+            border-radius: 22px;
             background: linear-gradient(135deg, var(--chat--color-primary) 0%, var(--chat--color-secondary) 100%);
             color: white;
             border: none;
