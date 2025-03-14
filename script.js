@@ -379,7 +379,7 @@
             </div>
             <div class="chat-messages"></div>
             <div class="chat-input">
-                <textarea placeholder="Geben Sie Ihre Nachricht ein..." rows="1"></textarea>
+                <textarea placeholder="Ihre Nachricht eingeben..." rows="1"></textarea>
                 <button type="submit">Senden</button>
             </div>
             <div class="chat-footer">
