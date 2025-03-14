@@ -12,12 +12,12 @@
 
         .n8n-chat-widget .chat-container {
             position: fixed;
-            bottom: 15px;
-            right: 15px;
+            bottom: 10px;
+            right: 10px;
             z-index: 1000;
             display: none;
-            width: 355px;
-            height: 550px;
+            width: 360px;
+            height: 560px;
             background: var(--chat--color-background);
             border-radius: 12px;
             box-shadow: 0 8px 32px rgba(133, 79, 255, 0.15);
