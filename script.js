@@ -12,8 +12,8 @@
 
         .n8n-chat-widget .chat-container {
             position: fixed;
-            bottom: 10px;
-            right: 10px;
+            bottom: 15px;
+            right: 15px;
             z-index: 1000;
             display: none;
             width: 355px;
